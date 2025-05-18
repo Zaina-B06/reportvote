@@ -1,4 +1,3 @@
-
 import streamlit as st
 import google.generativeai as genai
 from PIL import Image
@@ -252,8 +251,8 @@ def generate_problem_name(description):
         return response.text.strip('"')
     except:
         return description[:30] + "..." if len(description) > 30 else description
-
-genai.configure(api_key="AIzaSyC9jEg8Icw6kMPs0tdncQKUCGtdeI_xINo")
+api_key=st.secrets["bilal_api"]
+genai.configure(api_key = api_key)
 video_model = genai.GenerativeModel('gemini-2.0-flash')
 
 if st.session_state.current_page == "home":
@@ -357,18 +356,48 @@ elif st.session_state.current_page == "report":
                         response = video_model.generate_content(
                             contents=[
                                 {"mime_type": "video/mp4", "data": user_input},
-                                f"Analyze this community issue video. Return JSON: {{\"description\": \"text\", \"category\": \"{CATEGORIES}\", \"severity\": \"mild/moderate/severe\"}}"
+                                f["""You are an expert civic issue analyst. Analyze the uploaded video and generate a short, clear, and informative description of the visible issue. Identify what exactly is happening in the video - whether it's related to rural infrastructure, urban sanitation, waterlogging, garbage accumulation, potholes, damaged public property, blocked drains, or any other public concern.  
+
+Your response should include:  
+1. A simple explanation of the problem visible in the video.  
+2. The likely type of issue (e.g., overflowing garbage bin, stagnant water, broken road, damaged electric pole).  
+3. The severity level (mild, moderate, or severe).  
+4. The appropriate department or authority responsible for handling the issue (e.g., municipal sanitation, public works, electricity board).  
+
+Use language that is easy to understand by local authorities or civic bodies for quick action.
+
+Also mention any visible hazards or risks to health and safety. If possible, suggest an immediate action step and how it could benefit the community. This information will help authorities prioritize and respond faster.
+"""]
                             ]
                         )
                     elif isinstance(user_input, Image.Image):
                         model = genai.GenerativeModel('gemini-2.0-flash')
                         response = model.generate_content(
-                            ["Analyze this image. Return JSON: {\"description\": \"text\", \"category\": \"category\", \"severity\": \"mild/moderate/severe\"}", user_input]
+                            ["""You are an expert civic issue analyst. Analyze the uploaded image and generate a short, clear, and informative description of the visible issue. Identify what exactly is happening in the image - whether it's related to rural infrastructure, urban sanitation, waterlogging, garbage accumulation, potholes, damaged public property, blocked drains, or any other public concern.  
+
+Your response should include:  
+1. A simple explanation of the problem visible in the image.  
+2. The likely type of issue (e.g., overflowing garbage bin, stagnant water, broken road, damaged electric pole).  
+3. The severity level (mild, moderate, or severe).  
+4. The appropriate department or authority responsible for handling the issue (e.g., municipal sanitation, public works, electricity board).  
+
+Use language that is easy to understand by local authorities or civic bodies for quick action.
+
+Also mention any visible hazards or risks to health and safety. If possible, suggest an immediate action step and how it could benefit the community. This information will help authorities prioritize and respond faster."""]
                         )
                     else:
                         model = genai.GenerativeModel('gemini-2.0-flash')
-                        prompt = f"""Analyze this report: {user_input}
-                        Return JSON: {{\"description\": \"text\", \"category\": \"{CATEGORIES}\", \"severity\": \"mild/moderate/severe\"}}"""
+                        prompt = f["""You are an expert civic issue analyst. Analyze the uploaded audio and generate a short, clear, and informative description of the visible issue. Identify what exactly is happening in the audio - whether it's related to rural infrastructure, urban sanitation, waterlogging, garbage accumulation, potholes, damaged public property, blocked drains, or any other public concern.  
+
+Your response should include:  
+1. A simple explanation of the problem visible in the audio.  
+2. The likely type of issue (e.g., overflowing garbage bin, stagnant water, broken road, damaged electric pole).  
+3. The severity level (mild, moderate, or severe).  
+4. The appropriate department or authority responsible for handling the issue (e.g., municipal sanitation, public works, electricity board).  
+
+Use language that is easy to understand by local authorities or civic bodies for quick action.
+
+Also mention any visible hazards or risks to health and safety. If possible, suggest an immediate action step and how it could benefit the community. This information will help authorities prioritize and respond faster."""]
                         response = model.generate_content(prompt)
 
                     try:
@@ -404,9 +433,9 @@ elif st.session_state.current_page == "report":
                         st.metric("Problem Name", problem_name)
                         st.metric("Severity", SEVERITY_LEVELS[report['severity']])
                     with cols[1]:
-                        st.write(f"**Category:** {report['category']}")
-                        st.write(f"**Location:** {report['location']}")
-                        st.write(f"**Description:** {report['description']}")
+                        st.write(f"*Category:* {report['category']}")
+                        st.write(f"*Location:* {report['location']}")
+                        st.write(f"*Description:* {report['description']}")
                     if st.button("Submit Report"):
                         st.success("Report submitted successfully!")
                         time.sleep(1)
@@ -487,9 +516,9 @@ elif st.session_state.current_page == "vote":
                 with st.expander(f"{report['problem_name']} - {report['severity'].capitalize()} Issue", expanded=False):
                     cols = st.columns([3, 1])
                     with cols[0]:
-                        st.write(f"**Category:** {report['category']}")
-                        st.write(f"**Description:** {report['description']}")
-                        st.write(f"**Location:** 📍 {report['location']}")
+                        st.write(f"*Category:* {report['category']}")
+                        st.write(f"*Description:* {report['description']}")
+                        st.write(f"*Location:* 📍 {report['location']}")
 
                     with cols[1]:
                         user_voted = st.session_state.votes.get(report['id'], False)
@@ -605,5 +634,5 @@ elif st.session_state.current_page == "wallet":
                             st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
-if __name__ == "__main__":
+if _name_ == "_main_":
     pass
