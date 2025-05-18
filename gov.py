@@ -110,16 +110,12 @@ def main():
     """, unsafe_allow_html=True)
 
     st.sidebar.markdown("### Navigation")
-    page = st.sidebar.radio("Go to", ["Issue Dashboard", "Voter Analytics", "System Settings"])
+    page = st.sidebar.radio("Go to", ["Issue Dashboard"])
 
     data = load_data()
 
     if page == "Issue Dashboard":
         show_issue_dashboard(data)
-    elif page == "Voter Analytics":
-        show_voter_analytics(data)
-    elif page == "System Settings":
-        show_system_settings()
 
 # You can implement show_voter_analytics and show_system_settings as before
 
@@ -220,14 +216,10 @@ def show_issue_dashboard(data):
                 </div>
                 """, unsafe_allow_html=True)
 
-# Dummy functions (still needed if referenced)
-def show_voter_analytics(data):
-    st.markdown("## 📊 Voter Analytics")
-    st.info("Analytics section coming soon.")
 
-def show_system_settings():
-    st.markdown("## ⚙️ System Settings")
-    st.info("Settings panel coming soon.")
+if __name__ == "__main__":
+    main()
+
 
 if __name__ == "__main__":
     main()
